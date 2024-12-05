@@ -226,6 +226,6 @@ model = PredictionModel(vocab_size=dataset.vocab_size, embed_size=embed_size).to
 
 if __name__ == "__main__":
     load_model()
-    # train()
-    # save_model()
+    train()
+    save_model()
     evaluate_model()
