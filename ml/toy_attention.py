@@ -12,8 +12,8 @@ import os
 import json
 
 
-MODEL_FILE = "char_model.sft"
-VOCAB_FILE = "char_model_vocab.json"
+MODEL_FILE = "trained_models/char_model.sft"
+VOCAB_FILE = "trained_models/char_model_vocab.json"
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
