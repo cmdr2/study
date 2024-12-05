@@ -1,6 +1,7 @@
 from PIL import Image
 from torchvision import transforms
 
+device = "cuda:0"
 ORIG_SIZE = 512
 PREPROCESSED_IMAGE_SIZE = 128
 
