@@ -1,0 +1,3 @@
+[submodule "ml/ggml-test/ggml"]
+	path = ml/ggml-test/ggml
+	url = https://github.com/ggml-org/ggml.git
