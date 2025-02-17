@@ -14,5 +14,6 @@ add_subdirectory(ggml)
 link_libraries(ggml)
 
 add_executable(ggml-test main.cpp)
-add_executable(simple-add simple_add.cpp)
+add_executable(simple-add simple_addition.cpp)
+add_executable(simple-add-with-static-weights simple_addition_with_static_weights.cpp)
 
