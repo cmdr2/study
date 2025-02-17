@@ -1,3 +1,13 @@
+/*
+Compilation:
+1. Clone or download the ggml repository (to the same folder as this file): https://github.com/ggml-org/ggml
+2. Ensure that you've saved CMakeLists.txt next to this file.
+3. Run: cmake -B build
+4. Run: cmake --build build --config Release
+
+For CUDA, include `-D GGML_CUDA=1` in step 3.
+*/
+
 #include "ggml.h"
 #include "ggml-cpu.h"
 
