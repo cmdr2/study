@@ -11,6 +11,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 add_subdirectory(ggml)
 
-add_executable(${PROJECT_NAME} main.cpp)
+link_libraries(ggml)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE ggml)
+add_executable(ggml-test main.cpp)
+add_executable(simple-add simple_add.cpp)
+
