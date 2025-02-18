@@ -1,4 +1,4 @@
 build
 build_cpu
 build_cuda
-model.pth
+*.pth
