@@ -20,7 +20,7 @@ OUTPUTS = {
     "and": [[0], [0], [0], [1]],
 }
 
-gate_type = "xor"
+gate_type = "xor"  # options: "xor", "and", "or"
 
 
 class Model(nn.Module):
