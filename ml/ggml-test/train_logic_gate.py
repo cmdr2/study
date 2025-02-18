@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 # from torchviz import make_dot
 
-device = "cuda:0"
+device = "cuda" if torch.cuda.is_available() else "cpu"
 
 NUM_EPOCHS = 10000
 LR = 0.01
