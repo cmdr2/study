@@ -5,6 +5,8 @@ from tqdm import tqdm
 
 # from torchviz import make_dot
 
+# originally from Omkar Prabu's excellent intro to ggml: https://omkar.xyz/intro-ggml/
+
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 NUM_EPOCHS = 10000
