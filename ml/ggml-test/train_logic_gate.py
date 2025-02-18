@@ -2,7 +2,8 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
-from torchviz import make_dot
+
+# from torchviz import make_dot
 
 device = "cuda:0"
 
@@ -41,18 +42,18 @@ labels = torch.tensor(OUTPUTS[gate_type], device=device, dtype=torch.float32)
 model = Model()
 model = model.to(device)
 
-# criterion = nn.BCELoss()
-# optimizer = optim.SGD(model.parameters(), lr=LR)
+criterion = nn.BCELoss()
+optimizer = optim.SGD(model.parameters(), lr=LR)
 
-# print(f"Training for {NUM_EPOCHS} epochs..")
-# for epoch in tqdm(range(NUM_EPOCHS)):
-#     outputs = model(inputs)
-#     loss = criterion(outputs, labels)
-#     optimizer.zero_grad()
-#     loss.backward()
-#     optimizer.step()
+print(f"Training for {NUM_EPOCHS} epochs..")
+for epoch in tqdm(range(NUM_EPOCHS)):
+    outputs = model(inputs)
+    loss = criterion(outputs, labels)
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
 
-# torch.save(model.state_dict(), MODEL_FILE)
+torch.save(model.state_dict(), MODEL_FILE)
 
 # make_dot(model(inputs)).render("model", format="png", cleanup=True)
 
