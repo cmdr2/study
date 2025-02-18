@@ -1,3 +1,4 @@
+import sys
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -55,17 +56,24 @@ for epoch in tqdm(range(NUM_EPOCHS)):
     loss.backward()
     optimizer.step()
 
-torch.save(model.state_dict(), MODEL_FILE)
+torch.save(model.to("cpu").state_dict(), MODEL_FILE)
+
+if len(sys.argv) > 1 and sys.argv[1].strip() == "print_weights":
+    print("--- WEIGHTS ---\n")
+    for key, val in model.state_dict().items():
+        v = [f"{v:.8f}" for v in val.flatten()]
+        print(key.replace(".", "_"), "= {", ", ".join(v), "}")
+    print("\n--- /WEIGHTS ---\n")
 
 # make_dot(model(inputs)).render("model", format="png", cleanup=True)
 
+print("--- TEST INFERENCE ---")
 with torch.no_grad():
     model = Model().to(device)
-    model.load_state_dict(torch.load(MODEL_FILE))
+    model.load_state_dict(torch.load(MODEL_FILE, weights_only=True))
     model.eval()
 
-    print(inputs)
-    print(labels)
-    print(model(inputs).cpu().numpy())
-    outputs = model(torch.tensor([0, 0], device=device, dtype=torch.float32))
-    print(outputs.cpu().numpy())
+    print("inputs", inputs.tolist())
+    print("expected labels", labels.tolist())
+    print("actual labels", model(inputs).cpu().numpy().tolist())
+print("--- /TEST INFERENCE ---")
