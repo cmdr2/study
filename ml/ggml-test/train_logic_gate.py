@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import argparse
+from safetensors.torch import load_file, save_file
 from tqdm import tqdm
 
 # from torchviz import make_dot
@@ -16,7 +17,7 @@ parser.add_argument(
 parser.add_argument(
     "--print-weights", action="store_true", default=False, help="Print the trained weights to the console."
 )
-parser.add_argument("-o", "--output-file", default="model.pth", help="The output file to write the trained weights to.")
+parser.add_argument("-o", "--output-file", default="model.sft", help="The output file to write the trained weights to.")
 parser.add_argument("-e", "--epochs", type=int, default=10000, help="The number of epochs to train.")
 parser.add_argument("-lr", "--learning-rate", type=float, default=0.01, help="The learning rate.")
 parser.add_argument("-d", "--device", default=None, help="The device to train on, e.g. 'cuda', 'cpu' etc.")
@@ -69,7 +70,7 @@ for epoch in tqdm(range(args.epochs)):
     loss.backward()
     optimizer.step()
 
-torch.save(model.to("cpu").state_dict(), args.output_file)
+save_file(model.to("cpu").state_dict(), args.output_file)
 print(f"Written the weights to {args.output_file}")
 
 if args.print_weights:
@@ -84,7 +85,7 @@ if args.print_weights:
 print("--- TEST INFERENCE ---")
 with torch.no_grad():
     model = Model().to(device)
-    model.load_state_dict(torch.load(args.output_file, weights_only=True))
+    model.load_state_dict(load_file(args.output_file))
     model.eval()
 
     print("inputs", inputs.tolist())
