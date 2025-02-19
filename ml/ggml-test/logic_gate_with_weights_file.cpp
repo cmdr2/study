@@ -83,7 +83,7 @@ void load_weights(struct logic_gate_model &model) {
         {"fc2.bias", model.fc2_bias},
     };  // names of the parameters as written by the training code
 
-    safetensors::load_from_file("model.sft", [&tensor_map](const std::string& key, const std::vector<uint8_t>& tensor_data) {
+    safetensors::load_from_file("model.sft", [&tensor_map](const std::string& key, const std::string& dtype, const std::vector<uint32_t>& shape, const std::vector<uint8_t>& tensor_data) {
         std::cout<<"Read tensor: "<<key<<", size: "<<tensor_data.size()<<" bytes"<<std::endl;
 
         auto it = tensor_map.find(key);

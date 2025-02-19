@@ -33,7 +33,7 @@ header = {
 using json = nlohmann::json;
 
 namespace safetensors {
-    using Callback = std::function<void(const std::string&, const std::vector<uint8_t>&)>;
+    using Callback = std::function<void(const std::string&, const std::string&, const std::vector<uint32_t>&, const std::vector<uint8_t>&)>;
 
     void load_from_file(const std::string& filename, Callback callback) {
         std::ifstream file(filename, std::ios::binary);
@@ -56,6 +56,9 @@ namespace safetensors {
             if (key == "__metadata__") continue;
 
             const auto& offsets = tensor_info["data_offsets"];
+            const auto& dtype = tensor_info["dtype"].get<std::string>();
+            // const std::vector<uint32_t> shape;
+            const auto& shape = tensor_info["shape"].get<std::vector<uint32_t>>();
             uint64_t start = offsets[0];
             uint64_t end = offsets[1];
             size_t size = end - start;
@@ -64,7 +67,7 @@ namespace safetensors {
             file.seekg(8 + header_size + start);
             file.read(reinterpret_cast<char*>(tensor_data.data()), size);
 
-            callback(key, tensor_data);
+            callback(key, dtype, shape, tensor_data);
         }
     }
 }
