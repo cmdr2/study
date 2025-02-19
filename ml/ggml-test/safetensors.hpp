@@ -1,3 +1,28 @@
+/*
+MIT License
+
+A safetensors file has the following structure:
+- the first 8 bytes contain a 64-bit integer (little endian), which stores the size of the header string (N)
+- the next N bytes contain the header string in the JSON format
+- the rest of the bytes contain the raw tensor data in C-style row-major order. The byte order matches the host system.
+
+The JSON header contains a key called "__metadata__", as well as one key per parameter. Each parameter contains:
+"dtype", "shape", and "data_offsets". "dtype" is one of "F32", "I64" etc (numpy format), "shape" is an int array, and
+"data_offsets" is an int array containing the start and end position in the tensor data.
+
+E.g.
+header = {
+  "__metadata__": {
+    "description": "Optional file metadata"
+  },
+  "tensor_name": {
+    "dtype": "F32",
+    "shape": [3, 224, 224],
+    "data_offsets": [0, 602112]
+  }
+}
+*/
+
 #include <iostream>
 #include <fstream>
 #include <vector>
