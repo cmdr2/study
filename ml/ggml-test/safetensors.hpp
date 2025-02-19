@@ -1,0 +1,45 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <string>
+#include <cstdint>
+#include "json.hpp"
+
+using json = nlohmann::json;
+
+namespace safetensors {
+    using Callback = std::function<void(const std::string&, const std::vector<uint8_t>&)>;
+
+    void load_from_file(const std::string& filename, Callback callback) {
+        std::ifstream file(filename, std::ios::binary);
+        if (!file) {
+            throw std::runtime_error("Failed to open the safetensors file!");
+        }
+
+        // read the header size (8 bytes, little endian)
+        uint64_t header_size;
+        file.read(reinterpret_cast<char*>(&header_size), sizeof(header_size));
+        
+        // read the json header
+        std::vector<char> header_data(header_size);
+        file.read(header_data.data(), header_size);
+
+        json header = json::parse(header_data.begin(), header_data.end());
+
+        // read the tensors
+        for (const auto& [key, tensor_info] : header.items()) {
+            if (key == "__metadata__") continue;
+
+            const auto& offsets = tensor_info["data_offsets"];
+            uint64_t start = offsets[0];
+            uint64_t end = offsets[1];
+            size_t size = end - start;
+
+            std::vector<uint8_t> tensor_data(size);
+            file.seekg(8 + header_size + start);
+            file.read(reinterpret_cast<char*>(tensor_data.data()), size);
+
+            callback(key, tensor_data);
+        }
+    }
+}

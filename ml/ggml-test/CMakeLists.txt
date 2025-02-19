@@ -14,6 +14,7 @@ add_subdirectory(ggml)
 link_libraries(ggml)
 
 add_executable(logic-gate logic_gate.cpp)
+add_executable(logic-gate-with-weights-file logic_gate_with_weights_file.cpp json.hpp safetensors.hpp)
 add_executable(simple-add simple_addition.cpp)
 add_executable(simple-add-with-static-weights simple_addition_with_static_weights.cpp)
-
+add_executable(pickle-stack pickle_stack.cpp)
