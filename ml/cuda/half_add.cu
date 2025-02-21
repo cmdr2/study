@@ -1,3 +1,5 @@
+// see also: https://www.pyspur.dev/blog/introduction_cuda_programming
+
 #include <cuda_fp16.h>
 #include <iostream>
 
