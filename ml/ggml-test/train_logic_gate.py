@@ -18,6 +18,12 @@ parser.add_argument(
     "--print-weights", action="store_true", default=False, help="Print the trained weights to the console."
 )
 parser.add_argument("-o", "--output-file", default="model.sft", help="The output file to write the trained weights to.")
+parser.add_argument(
+    "--output-dtype",
+    default="f32",
+    choices=["f32", "f16"],
+    help="The data type of the tensors in the output file. Default: f32.",
+)
 parser.add_argument("-e", "--epochs", type=int, default=10000, help="The number of epochs to train.")
 parser.add_argument("-lr", "--learning-rate", type=float, default=0.01, help="The learning rate.")
 parser.add_argument("-d", "--device", default=None, help="The device to train on, e.g. 'cuda', 'cpu' etc.")
@@ -69,6 +75,9 @@ for epoch in tqdm(range(args.epochs)):
     optimizer.zero_grad()
     loss.backward()
     optimizer.step()
+
+if args.output_dtype == "f16":
+    model = model.to(torch.float16)
 
 save_file(model.to("cpu").state_dict(), args.output_file)
 print(f"Written the weights to {args.output_file}")
