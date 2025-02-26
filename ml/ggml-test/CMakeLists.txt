@@ -17,4 +17,6 @@ add_executable(simple-add simple_addition.cpp)
 add_executable(simple-add-with-static-weights simple_addition_with_static_weights.cpp)
 add_executable(logic-gate logic_gate.cpp)
 add_executable(logic-gate-with-weights-file logic_gate_with_weights_file.cpp safetensors.hpp json.hpp)
+
 add_executable(safetensor-viewer safetensor_viewer.cpp safetensors.hpp json.hpp)
+add_executable(large-add large_add.cpp)
