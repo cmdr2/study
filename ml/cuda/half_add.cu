@@ -6,7 +6,8 @@
 __global__ void add_half_arrays(const __half* a, const __half* b, __half* c, int n) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < n) {
-        c[idx] = __hadd(a[idx], b[idx]);
+        c[idx] = a[idx] + b[idx];
+        // c[idx] = __hadd(a[idx], b[idx]);
     }
 }
 
