@@ -20,8 +20,8 @@ For CUDA, include `-D GGML_CUDA=1` in step 3.
 
 ggml_backend_t backend = NULL;
 ggml_gallocr_t allocr = NULL;
-struct ggml_context* ctx_weights = NULL;
-struct ggml_tensor* weight = NULL;
+ggml_context* ctx_weights = NULL;
+ggml_tensor* weight = NULL;
 
 void init_backend() {
 #ifdef GGML_USE_CUDA
@@ -44,12 +44,11 @@ void init_mem_allocator() {
 void load_weights() {
     // create a context (for weights)
     int num_weight_tensors = 1; // since we only store one tensor
-    struct ggml_init_params weights_ctx_params = {
+    ctx_weights = ggml_init({
         /*.mem_size   =*/ ggml_tensor_overhead() * num_weight_tensors,
         /*.mem_buffer =*/ NULL,
         /*.no_alloc   =*/ true,
-    };
-    ctx_weights = ggml_init(weights_ctx_params);
+    });
 
     // 1. Define the tensor variables required for model weights
     weight = ggml_new_tensor_1d(ctx_weights, GGML_TYPE_F32, 3);
@@ -65,22 +64,22 @@ void load_weights() {
 // 1. uses the weight variable in the computation graph.
 void predict() {
     // create a context
-    struct ggml_init_params params = {
+    ggml_init_params params = {
         /*.mem_size   =*/ ggml_tensor_overhead() * GGML_DEFAULT_GRAPH_SIZE + ggml_graph_overhead(),
         /*.mem_buffer =*/ NULL,
         /*.no_alloc   =*/ true,
     };
-    struct ggml_context* ctx = ggml_init(params);
+    ggml_context* ctx = ggml_init(params);
 
     // 1. Define the tensor variables
-    struct ggml_tensor* a = ggml_new_tensor_1d(ctx, GGML_TYPE_F32, 3);
-    struct ggml_tensor* b = ggml_new_tensor_1d(ctx, GGML_TYPE_F32, 3);
-    struct ggml_tensor* c = ggml_new_tensor_1d(ctx, GGML_TYPE_F32, 3);
+    ggml_tensor* a = ggml_new_tensor_1d(ctx, GGML_TYPE_F32, 3);
+    ggml_tensor* b = ggml_new_tensor_1d(ctx, GGML_TYPE_F32, 3);
+    ggml_tensor* c = ggml_new_tensor_1d(ctx, GGML_TYPE_F32, 3);
 
     // 2. Define the computation graph (add 'weight' to each calculation)
-    struct ggml_tensor* result = ggml_add(ctx, weight, ggml_add(ctx, a, ggml_add(ctx, b, c)));
+    ggml_tensor* result = ggml_add(ctx, weight, ggml_add(ctx, a, ggml_add(ctx, b, c)));
 
-    struct ggml_cgraph* gf = ggml_new_graph(ctx);
+    ggml_cgraph* gf = ggml_new_graph(ctx);
     ggml_build_forward_expand(gf, result);
 
     // 3. Allocate memory for the tensor variables, and assign the data
@@ -96,16 +95,16 @@ void predict() {
     // 4. Run the computation, and read the result
     ggml_backend_graph_compute(backend, gf);
 
-    struct ggml_tensor* result_node = ggml_graph_node(gf, -1);  // get the last node in the graph
+    ggml_tensor* result_node = ggml_graph_node(gf, -1);  // get the last node in the graph
 
-    int n = ggml_nelements(result_node); // create an array to store the result data
+    int64_t n = ggml_nelements(result_node); // create an array to store the result data
     std::vector<float> result_data(n);
 
     // copy the data from the backend memory into the result array
     ggml_backend_tensor_get(result_node, result_data.data(), 0, ggml_nbytes(result_node));
 
     // print the data
-    for (int i = 0; i < n; i++) {
+    for (int64_t i = 0; i < n; i++) {
         std::cout<<result_data[i]<<", ";
     }
     std::cout<<std::endl;
