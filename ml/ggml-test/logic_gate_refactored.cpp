@@ -16,11 +16,7 @@ For CUDA, include `-D GGML_CUDA=1` in step 3.
 #endif
 
 #include <vector>
-#include <string>
 #include <iostream>
-#include <unordered_map>
-
-#include "safetensors.hpp"
 
 ggml_backend_t backend = NULL;
 ggml_gallocr_t allocr = NULL;
@@ -31,8 +27,6 @@ struct logic_gate_model {
     ggml_tensor* fc2_weight;
     ggml_tensor* fc2_bias;
     ggml_context* params_ctx;
-
-    std::unordered_map<std::string, struct ggml_tensor*> tensor_map;
 
     struct model_config {
         int32_t n_input = 2;
@@ -55,12 +49,6 @@ struct logic_gate_model {
         fc2_weight = ggml_new_tensor_2d(params_ctx, GGML_TYPE_F32, config.n_hidden, config.n_output);
         fc2_bias = ggml_new_tensor_1d(params_ctx, GGML_TYPE_F32, config.n_output);
 
-        // names of the parameters as written by the training code
-        tensor_map["fc1.weight"] = fc1_weight;
-        tensor_map["fc1.bias"] = fc1_bias;
-        tensor_map["fc2.weight"] = fc2_weight;
-        tensor_map["fc2.bias"] = fc2_bias;
-
         ggml_backend_alloc_ctx_tensors(params_ctx, backend);
     }
 
@@ -69,18 +57,15 @@ struct logic_gate_model {
     }
 
     void load_weights() {
-        auto tensors = tensor_map;
-        safetensors::load_from_file("model.sft", [&tensors](const std::string& key, const std::string& dtype, const std::vector<uint64_t>& shape, const std::vector<uint8_t>& tensor_data) {
-            std::cout<<"Read tensor: "<<key<<", size: "<<tensor_data.size()<<" bytes"<<std::endl;
+        std::vector<float> fc1_weight_data = { 0.22488207, -0.39456311, 0.32581645, -0.56285965, 2.41329503, -2.41322660, -0.37499088, 0.08395171, 0.21755114, 0.80772698, 0.25437704, 1.57216692, -0.43496752, 0.22240390, 0.46247596, -0.02229351, 0.32341745, 0.25361675, -0.20483392, 0.26918083, -0.91469419, 1.23764634, 0.15310341, -0.67303509, 1.77088165, 1.77059495, -0.11867817, -0.37374884, 0.79170924, -1.17232382, 0.07894109, -0.41966945 };
+        std::vector<float> fc1_bias_data = { -0.35652003, -0.67564911, 0.00009615, -0.62946773, 0.27859268, 0.01491952, 0.52390707, -0.47604990, -0.25365347, 0.21269353, 0.00003640, -0.44338676, -1.77084744, 0.82772928, 1.17234588, 0.77097332 };
+        std::vector<float> fc2_weight_data = { 0.13858399, -0.20547047, 3.41583562, 0.15011564, 0.56532770, 1.40391135, 0.00871399, 0.24152395, -0.39389160, 0.16984159, 1.34791148, -0.12602532, -3.02119160, -0.68023020, -1.64424217, -0.63815284 };
+        std::vector<float> fc2_bias_data = { -0.55232018 };
 
-            auto it = tensors.find(key);
-            if (it != tensors.end()) {
-                struct ggml_tensor* tensor = it->second;
-                ggml_backend_tensor_set(tensor, tensor_data.data(), 0, ggml_nbytes(tensor));
-            } else {
-                std::cout<<"Unknown key: "<<key<<std::endl;
-            }
-        });
+        ggml_backend_tensor_set(fc1_weight, fc1_weight_data.data(), 0, ggml_nbytes(fc1_weight));
+        ggml_backend_tensor_set(fc1_bias, fc1_bias_data.data(), 0, ggml_nbytes(fc1_bias));
+        ggml_backend_tensor_set(fc2_weight, fc2_weight_data.data(), 0, ggml_nbytes(fc2_weight));
+        ggml_backend_tensor_set(fc2_bias, fc2_bias_data.data(), 0, ggml_nbytes(fc2_bias));
     }
 
     ggml_tensor* forward(ggml_context *ctx, ggml_tensor *x) {
