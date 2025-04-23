@@ -75,7 +75,7 @@ struct logic_gate_model {
 
             auto it = tensors.find(key);
             if (it != tensors.end()) {
-                struct ggml_tensor* tensor = it->second;
+                ggml_tensor* tensor = it->second;
                 ggml_backend_tensor_set(tensor, tensor_data.data(), 0, ggml_nbytes(tensor));
             } else {
                 std::cout<<"Unknown key: "<<key<<std::endl;
