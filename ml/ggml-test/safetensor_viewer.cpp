@@ -14,7 +14,7 @@ int main(int argc, char* argv[]) {
 
     std::cout<<"Loading "<<filename<<std::endl;
 
-    safetensors::load_from_file(filename, [](const std::string& key, const std::string& dtype, const std::vector<uint32_t> shape, const std::vector<uint8_t> tensor_data) {
+    safetensors::load_from_file(filename, [](const std::string& key, const std::string& dtype, const std::vector<uint64_t> shape, const std::vector<uint8_t> tensor_data) {
         std::cout<<key<<", dtype: "<<dtype<<", shape: ";
         for (int i = 0; i < shape.size(); i++) {
             std::cout<<shape[i]<<", ";
