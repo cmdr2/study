@@ -93,7 +93,7 @@ void predict(logic_gate_model &model, std::vector<float> input) {
     // 1. Define the tensor variables
     ggml_tensor* x = ggml_new_tensor_1d(ctx, GGML_TYPE_F32, model.config.n_input);
 
-    // 2. Define the computation graph (add 'weight' to each calculation)
+    // 2. Define the computation graph
     ggml_tensor* fc1 = ggml_add(ctx, ggml_mul_mat(ctx, model.fc1_weight, x), model.fc1_bias);  // multiply the weights, and add the bias
     ggml_tensor* fc1_relu = ggml_relu(ctx, fc1);
     ggml_tensor* fc2 = ggml_add(ctx, ggml_mul_mat(ctx, model.fc2_weight, fc1_relu), model.fc2_bias);
