@@ -68,9 +68,9 @@ struct logic_gate_model {
         ggml_free(params_ctx);
     }
 
-    void load_weights() {
+    void load_weights(std::string filename) {
         auto tensors = tensor_map;
-        safetensors::load_from_file("model.sft", [&tensors](const std::string& key, const std::string& dtype, const std::vector<uint64_t>& shape, const std::vector<uint8_t>& tensor_data) {
+        safetensors::load_from_file(filename, [&tensors](const std::string& key, const std::string& dtype, const std::vector<uint64_t>& shape, const std::vector<uint8_t>& tensor_data) {
             std::cout<<"Read tensor: "<<key<<", size: "<<tensor_data.size()<<" bytes"<<std::endl;
 
             auto it = tensors.find(key);
@@ -154,7 +154,7 @@ int main(int argc, char* argv[]) {
     init_mem_allocator();
 
     logic_gate_model model;
-    model.load_weights();
+    model.load_weights("model.sft");
 
     for (int i = 0; i < 2; i++) {
         for (int j = 0; j < 2; j++) {
