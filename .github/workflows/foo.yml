@@ -17,7 +17,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Prepare the build
-        run: sleep 5 && echo "Preparing the build..."
+        run: echo "Preparing the build..."
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -37,7 +37,7 @@ jobs:
           name: build
           path: build
       - name: Run the tests
-        run: sleep 5 && echo "Running tests..."
+        run: echo "Running tests..."
 
   deploy_to_s3:
     name: Deploy to S3
