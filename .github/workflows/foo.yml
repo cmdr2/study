@@ -1,0 +1,92 @@
+name: release-foo
+run-name: Test and release
+on:
+  push:
+    branches:
+      - main
+      - release
+  release:
+    types: [created]
+
+jobs:
+  build:
+    name: Build project
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+      - name: Prepare the build
+        run: sleep 5 && echo "Preparing the build..."
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: |
+            ml/
+            Readme.md
+
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v5
+        with:
+          name: build
+          path: build
+      - name: Run the tests
+        run: sleep 5 && echo "Running tests..."
+
+  deploy_to_s3:
+    name: Deploy to S3
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/release'
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+      # - name: Download build artifacts
+      #   uses: actions/download-artifact@v5
+      #   with:
+      #     name: build
+      #     path: build
+      - name: Deploy
+        run: echo "Deploying to S3..."
+        shell: bash
+
+  deploy_to_itch:
+    name: Deploy to itch.io (release branch only)
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/release'
+    steps:
+      # - uses: actions/checkout@v5
+      - name: Download build artifacts
+        uses: actions/download-artifact@v5
+        with:
+          name: build
+          path: build
+      - name: Deploy
+        run: echo "Deploying to Itch..."
+        shell: bash
+
+
+  deploy_to_pypi:
+    name: Deploy to PyPI (created release only)
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'release' && github.event.action == 'created'
+    steps:
+      # - uses: actions/checkout@v5
+      - name: Download build artifacts
+        uses: actions/download-artifact@v5
+        with:
+          name: build
+          path: build
+      - name: Deploy
+        run: echo "Deploying to PyPI..."
+        shell: bash
