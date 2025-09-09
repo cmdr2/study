@@ -16,4 +16,4 @@ jobs:
       uses: actions/checkout@v4
     - name: Build
       run: |-
-        echo "Thing is ${{ vars.FOO }} with sha ${{ github.sha }}"
+        echo "Thing is ${{ vars.FOO }} with sha ${{ github.sha }} and secret ${{ secrets.FOO_SECRET }}"
