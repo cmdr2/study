@@ -7,18 +7,7 @@ on:
     branches:
     - main
 jobs:
-  deploy_to_github_pages_on_main_push:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    if: github.ref == 'refs/heads/main'
-    steps:
-    - name: Publish Message
-      run: |-
-        echo Publishing the 'build' artifact
   post_deploy_http_call:
-    needs:
-    - deploy_to_github_pages_on_main_push
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -30,6 +19,8 @@ jobs:
     - name: Check HTTP response
       run: |-
         echo "Checking response for string: commit"
+        echo "Response body:"
+        cat response.json
         if grep -q "commit" response.json; then
           echo "Response check passed"
         else
