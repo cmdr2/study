@@ -1,0 +1,39 @@
+# Generated initially using github-actions-wizard (https://github.com/cmdr2/github-actions-wizard)
+
+name: CI Pipeline
+run-name: CI Pipeline
+on:
+  push:
+    branches:
+    - main
+jobs:
+  deploy_to_github_pages_on_main_push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    if: github.ref == 'refs/heads/main'
+    - name: Publish Message
+      run: |-
+        echo Publishing the 'build' artifact
+  post_deploy_http_call:
+    needs:
+    - deploy_to_github_pages_on_main_push
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+    - name: Call HTTP endpoint
+      id: http_call
+      run: |-
+        #RES=$(curl -X POST -H "Content-Type: application/json" -d '{"haha": 1}' 'https://foo.com/aa')
+        RES=$(curl -X GET 'https://api.findstarlink.com/v1/findstarlink?latitude=20.7984&longitude=-156.3319&numDays=5&pretty')
+        echo "Response: $RES" >> $GITHUB_OUTPUT
+    - name: Check HTTP response
+      id: check_http_response
+      run: |-
+        echo "Checking response for string"
+        if [[ "${{ steps.http_call.outputs.Response }}" == *"Honolulu"* ]]; then
+          echo "Response check passed"
+        else
+          echo "Response check failed"; exit 1
+        fi
