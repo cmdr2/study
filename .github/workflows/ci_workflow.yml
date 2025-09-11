@@ -26,7 +26,6 @@ jobs:
     - name: Call HTTP endpoint
       id: http_call
       run: |-
-        #RES=$(curl -X POST -H "Content-Type: application/json" -d '{"haha": 1}' 'https://foo.com/aa')
         RES=$(curl -X GET 'https://api.findstarlink.com/v1/findstarlink?latitude=20.7984&longitude=-156.3319&numDays=5&pretty')
         echo "Response: $RES" >> $GITHUB_OUTPUT
     - name: Check HTTP response
