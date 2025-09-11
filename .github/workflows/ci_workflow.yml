@@ -12,6 +12,7 @@ jobs:
     permissions:
       contents: read
     if: github.ref == 'refs/heads/main'
+    steps:
     - name: Publish Message
       run: |-
         echo Publishing the 'build' artifact
