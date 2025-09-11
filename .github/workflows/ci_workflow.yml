@@ -18,8 +18,11 @@ jobs:
     - name: Check HTTP response
       run: |-
         echo "Checking response for string: commit"
-        if grep -q "commit" response.json; then
+        if grep -q "commita" response.json; then
           echo "Response check passed"
         else
-          echo "Response check failed"; exit 1
+          echo "Response check failed!"
+          echo "Got response:"
+          cat response.json
+          exit 1
         fi
