@@ -24,15 +24,12 @@ jobs:
       contents: read
     steps:
     - name: Call HTTP endpoint
-      id: http_call
       run: |-
-        RES=$(curl -X GET 'https://api.findstarlink.com/v1/findstarlink?latitude=20.7984&longitude=-156.3319&numDays=5&pretty')
-        echo "Response=$RES" >> $GITHUB_OUTPUT
+        curl -X GET 'https://api.findstarlink.com/v1/findstarlink?latitude=20.7984&longitude=-156.3319&numDays=5&pretty' > response.json
     - name: Check HTTP response
-      id: check_http_response
       run: |-
-        echo "Checking response for string"
-        if [[ "${{ steps.http_call.outputs.Response }}" == *"Honolulu"* ]]; then
+        echo "Checking response for string: Honolulu"
+        if grep -q "Honolulu" response.json; then
           echo "Response check passed"
         else
           echo "Response check failed"; exit 1
