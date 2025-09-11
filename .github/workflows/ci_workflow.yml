@@ -25,11 +25,12 @@ jobs:
     steps:
     - name: Call HTTP endpoint
       run: |-
-        curl -X GET 'https://api.findstarlink.com/v1/findstarlink?latitude=20.7984&longitude=-156.3319&numDays=5&pretty' > response.json
+        TEST_BODY='{"license_num":"TESTabdb-369d-47b9-8d97-3c66b999f29e","update_branch":"main","version":"2.0.0","commit":"fdsfds2d","ref":"bl_start","licensed_device":{"gpu":["Atari","2600"],"cpu":"Intel","ram":"32","os":"Windows"}}'
+        curl -X POST -H "Content-Type: application/json" -d '$TEST_BODY' 'https://freebirdxr.com/ops/check-update' > response.json
     - name: Check HTTP response
       run: |-
-        echo "Checking response for string: Honolulu"
-        if grep -q "Honolulu" response.json; then
+        echo "Checking response for string: commit"
+        if grep -q "commit" response.json; then
           echo "Response check passed"
         else
           echo "Response check failed"; exit 1
