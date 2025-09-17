@@ -1,10 +1,12 @@
-name: CI Pipeline
-run-name: CI Pipeline
+name: Create Release
+run-name: Create Release
 on:
   workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
     - name: Create Github release using softprops
       uses: softprops/action-gh-release@v1
