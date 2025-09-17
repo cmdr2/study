@@ -1,8 +1,9 @@
-name: On Release
-run-name: On Release
+name: On Commit
+run-name: On Commit
 on:
-  release:
-    types: [created]
+  push:
+    branches:
+    - main
 jobs:
   build:
     runs-on: ubuntu-latest

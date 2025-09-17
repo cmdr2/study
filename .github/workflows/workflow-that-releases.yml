@@ -1,5 +1,5 @@
-name: Create Release
-run-name: Create Release
+name: Push commit
+run-name: Push commit
 on:
   workflow_dispatch:
 jobs:
@@ -10,9 +10,24 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
     steps:
-    - name: Create Github release using softprops
-      uses: softprops/action-gh-release@v1
-      with:
-        tag_name: v1.0.0
-        name: v1.0.0
-        body: Initial release
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Make files
+      run: |
+        echo "Sample file content" > sample.txt
+    - name: Configure Git
+      run: |
+        git config --local user.email "findstarlink-data[bot]@users.noreply.github.com"
+        git config --local user.name "findstarlink-data[bot]"
+    - name: Commit changes
+      run: |
+        if grep -q "Replaced NORAD ID" /tmp/output.txt; then
+          echo "RELEASE: $(cat /tmp/output.txt)" > /tmp/commit_msg.txt
+        else
+          echo "Update TLE data" > /tmp/commit_msg.txt
+        fi
+
+        git add -A
+        git commit -F /tmp/commit_msg.txt || echo "No changes to commit"
+    - name: Push changes
+      run: git push
